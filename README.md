@@ -1,2 +1,2 @@
 # Babelfish
-Neural Hindi &lt;-> English tranlation system
+Neural Hindi &lt;-> English translation and parallel corpus generation system
