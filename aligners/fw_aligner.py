@@ -2,13 +2,14 @@
 
 from fuzzywuzzy import fuzz
 
-data_dir ='align_triplet1/'
+data_dir ='align_triplet2/'
 article_id = 1
-THRESHOLD = 60
+THRESHOLD = 70
 LENGTH_FRAC_THRESHOLD = 0.50
-
+filewr=open('parallel_corpus.txt','w')
+			
 while article_id<=30:
-
+	print(article_id)
 	native_file     = open(data_dir+str(article_id)+'_en.txt','r')
 	hindi_file      = open(data_dir+str(article_id)+'_hi.txt','r')
 	translated_file = open(data_dir+str(article_id)+'_tr_en.txt','r')
@@ -30,8 +31,7 @@ while article_id<=30:
 	
 		length_fraction = (len(translated[itr]) + 0.0)/len(native[best])
 		if max_match >= THRESHOLD and length_fraction >= LENGTH_FRAC_THRESHOLD and length_fraction < 1/LENGTH_FRAC_THRESHOLD:
-			filewr=open('parallel_corpus.txt','a')
-			filewr.write("---\n")
+			filewr.write("--------------------\n")
 			filewr.write(str(max_match)+'  '+str(round(length_fraction,3)))
 			filewr.write('\n')
 			filewr.write(hindi[itr])
@@ -42,3 +42,4 @@ while article_id<=30:
 			filewr.write(translated[itr])
 			filewr.write('\n')	
 	article_id=article_id+1
+filewr.close()
