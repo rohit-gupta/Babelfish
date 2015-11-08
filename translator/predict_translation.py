@@ -61,7 +61,7 @@ model.load_weights('Translation_Model_Weights.h5')
 
 indices1 = np.arange(1)
 test1=np.zeros((1, MAXLEN, VOCAB), dtype=np.bool)
-test1[0]=hindi_table.encode("जैसे ही भय आपके करीब आए उस पर आक्रमण कर उसे नष्ट कर दीजिये".split(' '))
+test1[0]=hindi_table.encode("इसी कारण से रेमी सॉम से इतना अलग है".split(' '))
 test11=test1[indices1]
 y_pred = (model.predict([test11]))
 print(y_pred[0])

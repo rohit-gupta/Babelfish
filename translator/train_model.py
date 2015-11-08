@@ -69,7 +69,7 @@ hindi_table   = WordTable(hindi_words,MAXLEN)
 english_table = WordTable(english_words,MAXLEN)
 
 #len_corpus=len(english_corpus)
-len_corpus = 20000
+len_corpus = 50000
 eng_encoded=np.zeros((len_corpus, MAXLEN, VOCAB), dtype=np.bool)
 hindi_encoded=np.zeros((len_corpus, MAXLEN, VOCAB), dtype=np.bool)
 for count in range(len_corpus):
@@ -106,9 +106,12 @@ model.add(Activation('softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
+model.save_weights("Translation_Model_Big_Weights_40Epochs.h5")
+model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
+model.save_weights("Translation_Model_Big_Weights_80Epochs.h5")
+model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
+model.save_weights("Translation_Model_Big_Weights_120Epochs.h5")
 
-model.save_weights("Translation_Model_Weights.h5")
 model_json = model.to_json()
-
-with open('Translation_Model.mdl', 'w') as outfile:
+with open('Translation_Model_Big_Structure.mdl', 'w') as outfile:
     json.dump(model_json, outfile)
