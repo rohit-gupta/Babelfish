@@ -78,10 +78,11 @@ for count in range(len_corpus):
 
 
 # Shuffle (X, y) in unison as the later parts of X will almost all be larger digits
-indices = np.arange(len_corpus)
+first_half_indices = np.arange(len_corpus/2)
+second_half_indices = np.arange(len_corpus/2+1,len_corpus)
 #np.random.shuffle(indices)
-X = hindi_encoded[indices]
-y = eng_encoded[indices]
+X = hindi_encoded[first_half_indices]
+y = eng_encoded[first_half_indices]
 
 # Explicitly set apart 10% for validation data that we never train over
 split_at = len(X) - len(X) / 10
@@ -106,11 +107,28 @@ model.add(Activation('softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
-model.save_weights("Translation_Model_Big_Weights_40Epochs.h5")
+model.save_weights("Translation_Model_Big_Weights_40Epochs_HalfData.h5")
+#model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
+#model.save_weights("Translation_Model_Big_Weights_80Epochs.h5")
+#model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
+#model.save_weights("Translation_Model_Big_Weights_120Epochs.h5")
+
+
+X = hindi_encoded[second_half_indices]
+y = eng_encoded[second_half_indices]
+
+# Explicitly set apart 10% for validation data that we never train over
+split_at = len(X) - len(X) / 10
+(X_train, X_val) = (slice_X(X, 0, split_at), slice_X(X, split_at))
+(y_train, y_val) = (y[:split_at], y[split_at:])
+
+print(X_train.shape)
+print(y_train.shape)
+
+print('Further train model...')
+
 model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
-model.save_weights("Translation_Model_Big_Weights_80Epochs.h5")
-model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
-model.save_weights("Translation_Model_Big_Weights_120Epochs.h5")
+model.save_weights("Translation_Model_Big_Weights_40Epochs_FullData.h5")
 
 model_json = model.to_json()
 with open('Translation_Model_Big_Structure.mdl', 'w') as outfile:
