@@ -7,6 +7,8 @@ import numpy as np
 from six.moves import range
 import json
 
+from wordtable import WordTable
+
 
 TRAINING_SIZE = 50000
 #INVERT = True
@@ -17,31 +19,8 @@ LAYERS = 1
 MAXLEN = 15
 VOCAB  =5000
 
-
-class WordTable(object):
-    """
-    Given a sentence:
-    + Encode it to a one hot integer representation
-    + Decode the one hot integer representation to its character output
-    + Decode a vector of probabilties to their character output
-    """
-    def __init__(self, words, maxlen):
-        self.words = sorted(set(words))
-        self.word_index = dict((w, i) for i, w in enumerate(self.words))
-        self.index_word = dict((i, w) for i, w in enumerate(self.words))
-        self.maxlen = maxlen
-
-    def encode(self, sentence, maxlen=None):
-        maxlen = maxlen if maxlen else self.maxlen
-        X = np.zeros((maxlen, len(self.words)+1))
-        for i, w in enumerate(sentence):
-            X[i, self.word_index.get(w,len(self.words))] = 1
-        return X
-
-    def decode(self, X, calc_argmax=True):
-        if calc_argmax:
-            X = X.argmax(axis=-1)
-        return ' '.join([self.index_word.get(x,"<UNK>") for x in X])
+vocab_folder = "vocabulary/"
+corpus_folder = "parallel_corpus/"
 
 
 questions = []
@@ -50,19 +29,19 @@ seen = set()
 
 print('Loading parallel corpora...')
 
-with open("PCEng1.txt") as f:
+with open(corpus_folder + "english.txt") as f:
     english_corpus = f.read().strip().lower().split("\n")
 
-with open("PCHindi1.txt") as f:
+with open(corpus_folder + "hindi.txt") as f:
     hindi_corpus = f.read().strip().split("\n")
 
 
 print('Vectorization...')
 
-with open("HiEncode.txt") as f:
+with open(vocab_folder + "hindi.txt") as f:
     hindi_words = f.read().strip().split("\n")
 
-with open("EngEncode.txt") as f:
+with open(vocab_folder + "english.txt") as f:
     english_words = f.read().strip().split("\n")
 
 hindi_table   = WordTable(hindi_words,MAXLEN)
@@ -108,11 +87,6 @@ model.add(Activation('softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
 model.save_weights("Translation_Model_Big_Weights_40Epochs_HalfData.h5")
-#model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
-#model.save_weights("Translation_Model_Big_Weights_80Epochs.h5")
-#model.fit(X_train, y_train, batch_size=BATCH_SIZE, nb_epoch=40, validation_data=(X_val, y_val), show_accuracy=True)
-#model.save_weights("Translation_Model_Big_Weights_120Epochs.h5")
-
 
 X = hindi_encoded[second_half_indices]
 y = eng_encoded[second_half_indices]
